@@ -23,11 +23,11 @@ Trusted Publisher settings are configured from an existing npm package. Use a
 release candidate to establish the package without sacrificing provenance for
 the final release:
 
-1. set the synchronized project version to `0.9.0-rc.1`;
+1. set the synchronized project version to `0.9.0-rc.2`;
 2. create a short-lived granular npm token with the minimum available publish
    access and store it only as the protected GitHub environment secret
    `NPM_TOKEN`;
-3. create tag `v0.9.0-rc.1` and publish a GitHub prerelease; the workflow uses
+3. create tag `v0.9.0-rc.2` and publish a GitHub prerelease; the workflow uses
    npm dist-tag `next` and publishes provenance from the public repository;
 4. open the new package settings on npmjs.com and add a GitHub Actions Trusted
    Publisher with owner `marco-querini`, repository
@@ -89,7 +89,7 @@ Install without consulting the registry:
 validation_dir="$(mktemp -d)"
 cd "$validation_dir"
 npm init -y
-npm install /path/to/hcc2d-encoder-0.9.0-rc.1.tgz
+npm install /path/to/hcc2d-encoder-0.9.0-rc.2.tgz
 ./node_modules/.bin/hcc2d-encoder --text "release validation" \
   --mode hcc2d8 --file-format raw output.png
 test -s output.png

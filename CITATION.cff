@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "If you use this software in academic work, please cite the HCC2D specification and this software release."
 title: "HCC2D JavaScript Encoder"
 type: software
-version: 0.9.0-rc.1
+version: 0.9.0-rc.2
 authors:
   - family-names: Querini
     given-names: Marco

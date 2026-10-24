@@ -23,7 +23,7 @@ const temporaryDirectories = [];
 afterEach(async () => Promise.all(temporaryDirectories.splice(0).map((directory) => rm(directory, { recursive: true, force: true }))));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
-test("package version is synchronized", () => assert.equal(version, "0.9.0-rc.1"));
+test("package version is synchronized", () => assert.equal(version, "0.9.0-rc.2"));
 
 test("known QR output matches the C and Python reference encoders", () => {
   const symbol = encodeQr(Buffer.from("hello"), { scale: 6, quietZone: 0 });

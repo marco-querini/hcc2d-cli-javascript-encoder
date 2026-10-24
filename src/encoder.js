@@ -1,7 +1,7 @@
 // HCC2D Encoder - pure JavaScript reference implementation
 // Copyright 2010-2026 Marco Querini
 // SPDX-License-Identifier: Apache-2.0
-// Version 0.9.0-rc.1
+// Version 0.9.0-rc.2
 //
 // Intended to conform to HCC2D Code Specification 0.9.0:
 // https://doi.org/10.5281/zenodo.22206528

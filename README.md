@@ -1,4 +1,4 @@
-# HCC2D JavaScript Encoder 0.9.0-rc.1
+# HCC2D JavaScript Encoder 0.9.0-rc.2
 
 [![CI](https://github.com/marco-querini/hcc2d-cli-javascript-encoder/actions/workflows/ci.yml/badge.svg)](https://github.com/marco-querini/hcc2d-cli-javascript-encoder/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/hcc2d-encoder.svg)](https://www.npmjs.com/package/hcc2d-encoder)
@@ -271,7 +271,7 @@ Web Worker and does not upload payloads.
 npm ci
 npm run check
 npm pack
-npm install --global ./hcc2d-encoder-0.9.0-rc.1.tgz
+npm install --global ./hcc2d-encoder-0.9.0-rc.2.tgz
 ```
 
 `npm pack --dry-run` shows every file that would be published. The `files`

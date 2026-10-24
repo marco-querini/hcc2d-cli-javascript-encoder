@@ -12,4 +12,4 @@ export {
   writePng,
 } from "./encoder.js";
 
-export const version = "0.9.0-rc.1";
+export const version = "0.9.0-rc.2";
