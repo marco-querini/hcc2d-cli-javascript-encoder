@@ -1,4 +1,4 @@
-# HCC2D JavaScript Encoder 0.9.0
+# HCC2D JavaScript Encoder 0.9.0-rc.1
 
 [![CI](https://github.com/marco-querini/hcc2d-cli-javascript-encoder/actions/workflows/ci.yml/badge.svg)](https://github.com/marco-querini/hcc2d-cli-javascript-encoder/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/hcc2d-encoder.svg)](https://www.npmjs.com/package/hcc2d-encoder)
@@ -60,26 +60,26 @@ telemetry.
 
 ## Installation
 
-Install into a project:
+Install the release candidate into a project:
 
 ```bash
-npm install hcc2d-encoder
+npm install hcc2d-encoder@next
 ```
 
 Install the CLI globally:
 
 ```bash
-npm install --global hcc2d-encoder
+npm install --global hcc2d-encoder@next
 hcc2d-encoder --help
 ```
 
 Run the CLI without a permanent global installation:
 
 ```bash
-npx hcc2d-encoder --help
+npx hcc2d-encoder@next --help
 ```
 
-Before the first npm release, install from a local clone:
+For local development, install from a clone:
 
 ```bash
 npm install
@@ -271,7 +271,7 @@ Web Worker and does not upload payloads.
 npm ci
 npm run check
 npm pack
-npm install --global ./hcc2d-encoder-0.9.0.tgz
+npm install --global ./hcc2d-encoder-0.9.0-rc.1.tgz
 ```
 
 `npm pack --dry-run` shows every file that would be published. The `files`

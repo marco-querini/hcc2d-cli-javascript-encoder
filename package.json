@@ -1,6 +1,6 @@
 {
   "name": "hcc2d-encoder",
-  "version": "0.9.0",
+  "version": "0.9.0-rc.1",
   "description": "Pure JavaScript reference encoder for QR, HCC2D4, and HCC2D8 symbols",
   "type": "module",
   "sideEffects": false,

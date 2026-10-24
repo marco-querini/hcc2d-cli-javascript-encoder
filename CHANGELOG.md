@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0
+## 0.9.0-rc.1
 
 - added a pure JavaScript HCC2D reference encoder for Node.js
 - aligned encoding behavior with the public C and Python reference encoders 0.9.0

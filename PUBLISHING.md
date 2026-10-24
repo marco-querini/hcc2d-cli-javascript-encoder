@@ -89,7 +89,7 @@ Install without consulting the registry:
 validation_dir="$(mktemp -d)"
 cd "$validation_dir"
 npm init -y
-npm install /path/to/hcc2d-encoder-0.9.0.tgz
+npm install /path/to/hcc2d-encoder-0.9.0-rc.1.tgz
 ./node_modules/.bin/hcc2d-encoder --text "release validation" \
   --mode hcc2d8 --file-format raw output.png
 test -s output.png
