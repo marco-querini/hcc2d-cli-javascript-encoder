@@ -12,7 +12,7 @@ import {
 } from "./encoder.js";
 
 const PROGRAM_INFO = `HCC2D Encoder - pure JavaScript reference implementation
-Copyright 2010-2026 Marco Querini  |  SPDX-License-Identifier: Apache-2.0  |  Version 0.9.0-rc.2
+Copyright 2010-2026 Marco Querini  |  SPDX-License-Identifier: Apache-2.0  |  Version 0.9.0
 
 Specification compliance:
   Intended to conform to the HCC2D Code Specification version 0.9.0.
@@ -128,7 +128,7 @@ export function main(argv = process.argv.slice(2), io = console) {
   try {
     options = parseArguments(argv);
     if (options.help) { io.log(HELP); return 0; }
-    if (options.versionInfo) { io.log("0.9.0-rc.2"); return 0; }
+    if (options.versionInfo) { io.log("0.9.0"); return 0; }
     if (!Number.isInteger(options.version) || options.version < 0 || options.version > 40) throw new RangeError("version must be an integer from 0 to 40");
     if (!Number.isInteger(options.scale) || options.scale < 6 || options.scale > 1000) throw new RangeError("scale must be an integer from 6 to 1000");
     if (!Number.isInteger(options.quietZone) || options.quietZone < 0 || options.quietZone > 1000) throw new RangeError("quiet zone must be an integer from 0 to 1000");

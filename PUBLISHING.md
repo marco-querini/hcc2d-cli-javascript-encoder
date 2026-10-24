@@ -23,25 +23,29 @@ Trusted Publisher settings are configured from an existing npm package. Use a
 release candidate to establish the package without sacrificing provenance for
 the final release:
 
-1. set the synchronized project version to `0.9.0-rc.2`;
+1. set the synchronized project version to `0.9.0-rc.1`;
 2. create a short-lived granular npm token with the minimum available publish
    access and store it only as the protected GitHub environment secret
    `NPM_TOKEN`;
-3. create tag `v0.9.0-rc.2` and publish a GitHub prerelease; the workflow uses
+3. create tag `v0.9.0-rc.1` and publish a GitHub prerelease; the workflow uses
    npm dist-tag `next` and publishes provenance from the public repository;
 4. open the new package settings on npmjs.com and add a GitHub Actions Trusted
    Publisher with owner `marco-querini`, repository
    `hcc2d-cli-javascript-encoder`, workflow `release.yml`, environment `npm`,
    and permission for direct `npm publish`;
-5. revoke the bootstrap token, delete the `NPM_TOKEN` GitHub secret, and remove
-   the `NODE_AUTH_TOKEN` environment entry from `release.yml`;
-6. set the synchronized project version to `0.9.0`, rerun the complete release
+5. remove the `NODE_AUTH_TOKEN` environment entry from `release.yml`, set the
+   synchronized project version to `0.9.0-rc.2`, and publish a second
+   prerelease to verify OIDC Trusted Publishing;
+6. after the successful OIDC publication, revoke the bootstrap token, delete
+   the `NPM_TOKEN` GitHub secret, and configure npm to disallow token-based
+   publishing;
+7. set the synchronized project version to `0.9.0`, rerun the complete release
    validation, and publish the final GitHub release through OIDC.
 
 A newly created Trusted Publisher configuration must complete its first
-successful publication within two days. Create the configuration only when the
-final release is ready, then publish `0.9.0` within that window. If the window
-expires, delete the expired configuration and create a new one.
+successful publication within two days. Create the configuration only when an
+OIDC validation release is ready, then publish it within that window. If the
+window expires, delete the expired configuration and create a new one.
 
 Trusted Publishing requires npm 11.5.1 or later and Node.js 22.14.0 or later.
 The release workflow uses Node.js 24, installs the pinned npm CLI version, and
@@ -89,7 +93,7 @@ Install without consulting the registry:
 validation_dir="$(mktemp -d)"
 cd "$validation_dir"
 npm init -y
-npm install /path/to/hcc2d-encoder-0.9.0-rc.2.tgz
+npm install /path/to/hcc2d-encoder-0.9.0.tgz
 ./node_modules/.bin/hcc2d-encoder --text "release validation" \
   --mode hcc2d8 --file-format raw output.png
 test -s output.png
