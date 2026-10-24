@@ -47,5 +47,3 @@ jobs:
       - run: npm pack --dry-run
       - name: Publish package
         run: npm publish --access public --provenance --tag "${{ github.event.release.prerelease && 'next' || 'latest' }}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
