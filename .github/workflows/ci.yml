@@ -10,15 +10,15 @@ permissions:
 jobs:
   test:
     name: Node.js ${{ matrix.node-version }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
-        node-version: [18, 20, 22, 24]
+        node-version: [22, 24, 26]
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: ${{ matrix.node-version }}
           package-manager-cache: false
@@ -27,44 +27,48 @@ jobs:
 
   package:
     name: Validate npm package
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           package-manager-cache: false
       - run: npm ci
       - run: npm pack --dry-run
-      - run: npm pack
+      - name: Build npm tarball
+        id: pack
+        run: echo "tarball=$(npm pack --silent)" >> "$GITHUB_OUTPUT"
       - run: |
           mkdir package-smoke
           cd package-smoke
           npm init -y
-          npm install ../hcc2d-encoder-0.9.0.tgz
+          npm install "../${{ steps.pack.outputs.tarball }}"
           ./node_modules/.bin/hcc2d-encoder --text "package smoke test" --mode hcc2d4 --file-format raw output.png
           test -s output.png
 
   reference-parity:
-    name: C/Python parity (800 cases)
-    runs-on: ubuntu-latest
+    name: C/Python parity (842 PNGs + 12 boundaries)
+    runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: marco-querini/hcc2d-cli-c-encoder
+          ref: 92d205bc47abab7c2dc80b3b20288870840550d1 # v0.9.0
           path: references/c
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: marco-querini/hcc2d-cli-python-encoder
+          ref: 4f6cd78fb513505a0d0a412834f5b04487884f57 # v0.9.0
           path: references/python
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           package-manager-cache: false
-      - uses: actions/setup-python@v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: "3.13"
       - run: sudo apt-get update && sudo apt-get install -y zlib1g-dev

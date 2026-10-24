@@ -10,7 +10,10 @@
   disclaimer, and specification references with the other official encoders
 - added an importable ES module API and the `hcc2d-encoder` console command
 - added regression tests for known QR, HCC2D4, and HCC2D8 outputs
-- added an exhaustive 800-case C/Python/JavaScript comparison of dimensions,
-  palettes, and decompressed PNG pixels
-- added GitHub Actions CI for Node.js 18, 20, 22, and 24
-- added npm package smoke testing and an OIDC Trusted Publishing workflow
+- added 842 C/Python/JavaScript parity cases covering every forced version,
+  binary capacity boundaries, automatic selection, multi-block symbols, and
+  decompressed PNG output, plus 12 exact overflow-rejection checks
+- added GitHub Actions CI for supported Node.js 22 and 24 LTS releases and
+  Node.js 26 Current, with npm 12.2.1 for release automation
+- added npm package smoke testing and an OIDC Trusted Publishing workflow with
+  immutable action and reference-encoder revisions

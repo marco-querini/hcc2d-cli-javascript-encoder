@@ -25,29 +25,49 @@ Description:
 
 Terms of service / no-warranty notice:
   This software is provided "as is", without warranties or conditions of any
-  kind. Use is entirely at your own risk. The author assumes no responsibility
-  for unreadable codes, failed scans, data loss, or other consequences.
+  kind, express or implied, including but not limited to merchantability,
+  fitness for a particular purpose, and noninfringement. Use is entirely at
+  your own risk. The author assumes no responsibility or liability for damages,
+  losses, claims, unreadable or non-decodable codes, failed scans, data loss,
+  or other consequences arising from its use.
 
 Apache 2.0 summary:
   You may use, copy, modify, and redistribute this software, including for
-  commercial purposes, subject to the complete LICENSE terms.`;
+  commercial purposes. You must retain the applicable copyright and license
+  notices and state significant modifications when redistributing modified
+  versions. This summary is informational only; the LICENSE file and Apache
+  License 2.0 text control the legal terms.
+  Full license text: https://www.apache.org/licenses/LICENSE-2.0`;
 
 export const HELP = `Usage: hcc2d-encoder [options] output.png
 
 ${PROGRAM_INFO}
 
 Payload source (exactly one is required):
-  --text STRING          UTF-8 string to encode
+  --text STRING          UTF-8 string to encode as the payload
   --input-file PATH      File bytes to encode
 
 Options:
-  --file-format FORMAT   hcc2df or raw (default: hcc2df)
-  --mode MODE            qr, hcc2d4, or hcc2d8 (default: hcc2d4)
-  --ec-level LEVEL       L, M, Q, or H (default: Q)
-  --version N            1-40, or 0 for automatic selection (default: 0)
-  --scale PX             Pixels per module, 6-1000 (default: 12)
-  --quiet-zone N         White margin in modules, 0-1000 (default: 4)
-  --palette MODEL        model1 (screen) or model2 (print; default: model1)
+  --file-format FORMAT   Payload format: hcc2df wraps text or file bytes with
+                         filename and compression metadata; raw encodes the
+                         supplied bytes directly (default: hcc2df)
+  --mode MODE            Symbol mode: qr = standard black/white QR Code;
+                         hcc2d4 = 4 colours, 2 bits per data module; hcc2d8 =
+                         8 colours, 3 bits per data module. For qr,
+                         --file-format changes only the stored payload bytes
+                         (default: hcc2d4)
+  --ec-level LEVEL       Error-correction level: L ~ 7%, M ~ 15%, Q ~ 25%,
+                         or H ~ 30% recoverable damage. Higher levels reduce
+                         data capacity (default: Q)
+  --version N            Symbol version 1-40. Version v has an inner grid of
+                         (17+4v) x (17+4v) modules; 0 selects the smallest
+                         version that fits the payload (default: 0)
+  --scale PX             Pixels per module in the output PNG, 6-1000
+                         (default: 12)
+  --quiet-zone N         White margin outside the symbol, in modules, 0-1000
+                         (default: 4)
+  --palette MODEL        HCC2D palette: model1 = screen display; model2 =
+                         print/CMYK; ignored for qr (default: model1)
   -h, --help             Show this help and exit
   -V, --version-info     Show the package version and exit
 

@@ -26,6 +26,7 @@ add-ons.
   - Google Play: <https://play.google.com/store/apps/details?id=com.hcc2d.decoder>
   - Huawei AppGallery: <https://appgallery.cloud.huawei.com/marketshare/app/C117478101>
   - App Store: <https://apps.apple.com/app/id6762202762>
+- HCC2D Encoder on the Mac App Store: <https://apps.apple.com/app/id6767833986>
 
 ## Supported features
 
@@ -38,7 +39,7 @@ add-ons.
 - custom palettes through the JavaScript API, with normative black/white anchors
 - raw payloads and optional HCC2DF file wrapping
 - indexed PNG output
-- importable ES module API
+- importable modern ECMAScript module (ESM) API
 - command-line interface for text and binary files
 - no npm runtime dependencies
 
@@ -47,8 +48,11 @@ HCC2D16 is not included because it is not part of HCC2D Code Specification
 
 ## Requirements
 
-- Node.js 18 or later
-- npm 9 or later for installation and package management
+- Node.js 22 or later
+- npm 10 or later for installation and package management
+
+Continuous integration covers the supported Node.js 22 and 24 LTS lines and
+Node.js 26 Current. Development and release automation use npm 12.2.1.
 
 The package uses only Node.js standard-library modules. There are no runtime
 dependencies, native npm add-ons, post-install scripts, downloads, or
@@ -197,18 +201,25 @@ representation is strictly smaller than 90% of the original size.
 ## Compatibility and validation
 
 The JavaScript implementation is validated against both public reference
-encoders. The exhaustive forced-version matrix covers:
+encoders. The forced-version matrix covers:
 
 - all versions from 1 through 40
 - QR, HCC2D4, and HCC2D8
 - EC levels L, M, Q, and H
 - Model 1 and Model 2 where applicable
-- 800 total combinations
+- 800 structural combinations using a minimal payload
 
 For every case, the comparison verifies identical PNG dimensions, palette
 entries, and decompressed indexed pixels across JavaScript, C, and Python.
 Compressed IDAT bytes are intentionally not required to match because different
 zlib versions can produce different lossless streams for identical pixels.
+
+An additional 42 binary-payload cases verify automatic version selection,
+multi-block symbols, and the exact capacity boundary at representative
+versions 1, 10, 27, and 40. Twelve corresponding overflow cases verify that
+all three encoders reject the first byte beyond the supported capacity. The
+complete reference suite therefore compares 842 generated PNGs and 12 exact
+rejection boundaries.
 
 Run the normal test suite:
 
@@ -231,7 +242,7 @@ HCC2D_PYTHON_REFERENCE_DIR=/path/to/hcc2d-cli-python-encoder \
 npm run test:reference
 ```
 
-GitHub Actions tests Node.js 18, 20, 22, and 24. A separate packaging job
+GitHub Actions tests Node.js 22, 24, and 26. A separate packaging job
 builds the exact npm tarball, installs it into a clean project, invokes its
 published CLI entry point, and verifies a generated PNG.
 

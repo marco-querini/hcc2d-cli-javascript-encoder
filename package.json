@@ -9,7 +9,7 @@
     ".": "./src/index.js"
   },
   "bin": {
-    "hcc2d-encoder": "./bin/hcc2d-encoder.js"
+    "hcc2d-encoder": "bin/hcc2d-encoder.js"
   },
   "files": [
     "bin/",
@@ -25,8 +25,10 @@
     "prepublishOnly": "npm run check"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=22",
+    "npm": ">=10"
   },
+  "packageManager": "npm@12.2.1",
   "keywords": [
     "hcc2d",
     "qr-code",

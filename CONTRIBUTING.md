@@ -23,9 +23,10 @@ npm pack --dry-run
 ```
 
 Changes to encoding logic must include regression coverage and pass the
-800-case comparison against the C and Python reference encoders. Changes to
-PNG compression may produce different compressed bytes, but decompressed
-indexed pixels, dimensions, and palette entries must remain identical.
+842-image comparison and the 12 exact rejection-boundary checks against the C
+and Python reference encoders. Changes to PNG compression may produce
+different compressed bytes, but decompressed indexed pixels, dimensions, and
+palette entries must remain identical.
 
 Keep public API names documented in README.md and record user-visible changes
 in CHANGELOG.md. Never commit generated PNGs, npm tarballs, credentials, local

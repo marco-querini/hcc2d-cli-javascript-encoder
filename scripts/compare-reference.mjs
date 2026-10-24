@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { createHash } from "node:crypto";
-import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -66,6 +66,94 @@ function run(command, args, options = {}) {
   }
 }
 
+function runExpectingFailure(command, args, options = {}) {
+  const result = spawnSync(command, args, { encoding: "utf8", ...options });
+  if (result.error || result.status === 0) {
+    throw new Error(`${command} unexpectedly succeeded: ${result.stdout || result.stderr || result.error}`);
+  }
+}
+
+function paletteFor(mode, paletteName) {
+  if (mode === "hcc2d4") return paletteName === "model2" ? PALETTE_4_MODEL2 : PALETTE_4_MODEL1;
+  if (mode === "hcc2d8") return paletteName === "model2" ? PALETTE_8_MODEL2 : PALETTE_8_MODEL1;
+  return null;
+}
+
+function encodeJavascript(payloadBytes, { mode, ecLevel, version, paletteName = "model1" }) {
+  const common = { ecLevel, version, scale: 6, quietZone: 0 };
+  return mode === "qr"
+    ? encodeQr(payloadBytes, common)
+    : encodeHcc2d(payloadBytes, { ...common, mode, palette: paletteFor(mode, paletteName) });
+}
+
+function deterministicPayload(length, seed) {
+  return Buffer.from({ length }, (_, index) => (index * 131 + seed * 17 + (index >>> 3)) & 0xff);
+}
+
+function referenceArguments(payloadPath, outputPath, { mode, ecLevel, version, paletteName = "model1" }) {
+  return [
+    "--input-file", payloadPath,
+    "--mode", mode,
+    "--file-format", "raw",
+    "--ec-level", ecLevel,
+    "--version", String(version),
+    "--scale", "6",
+    "--quiet-zone", "0",
+    "--palette", paletteName,
+    outputPath,
+  ];
+}
+
+function compareCase(label, payloadBytes, options) {
+  const payloadPath = join(temporary, `${label}.bin`);
+  const cOutput = join(temporary, `${label}-c.png`);
+  const pythonOutput = join(temporary, `${label}-python.png`);
+  writeFileSync(payloadPath, payloadBytes);
+  run(cBinary, referenceArguments(payloadPath, cOutput, options));
+  run(process.env.PYTHON || "python3", [
+    "-m", "hcc2d_encoder", ...referenceArguments(payloadPath, pythonOutput, options),
+  ], { env: { ...process.env, PYTHONPATH: pythonSource } });
+  const pngs = [
+    inspectPng(encodeJavascript(payloadBytes, options).toPng()),
+    inspectPng(readFileSync(cOutput)),
+    inspectPng(readFileSync(pythonOutput)),
+  ];
+  for (const field of ["ihdr", "palette", "scanlines"]) {
+    const hashes = pngs.map((png) => sha256(png[field]));
+    if (new Set(hashes).size !== 1) {
+      throw new Error(`${label} ${field} differs: JavaScript=${hashes[0]} C=${hashes[1]} Python=${hashes[2]}`);
+    }
+  }
+}
+
+function assertRejectedByEveryEncoder(label, payloadBytes, options) {
+  const payloadPath = join(temporary, `${label}.bin`);
+  const cOutput = join(temporary, `${label}-c.png`);
+  const pythonOutput = join(temporary, `${label}-python.png`);
+  writeFileSync(payloadPath, payloadBytes);
+  try {
+    encodeJavascript(payloadBytes, options);
+    throw new Error(`JavaScript unexpectedly accepted ${label}`);
+  } catch (error) {
+    if (!String(error?.message).includes("fits at most")) throw error;
+  }
+  runExpectingFailure(cBinary, referenceArguments(payloadPath, cOutput, options));
+  runExpectingFailure(process.env.PYTHON || "python3", [
+    "-m", "hcc2d_encoder", ...referenceArguments(payloadPath, pythonOutput, options),
+  ], { env: { ...process.env, PYTHONPATH: pythonSource } });
+}
+
+function capacityFor(options) {
+  try {
+    encodeJavascript(Buffer.alloc(100_000), options);
+  } catch (error) {
+    const match = String(error?.message).match(/fits at most (\d+) bytes/);
+    if (match) return Number(match[1]);
+    throw error;
+  }
+  throw new Error(`Capacity probe unexpectedly fitted for ${JSON.stringify(options)}`);
+}
+
 try {
   run(process.env.CC || "cc", ["-std=c11", "-O2", "-o", cBinary, cSource, "-lz"]);
   let checked = 0;
@@ -95,7 +183,45 @@ try {
       }
     }
   }
-  console.log(`Validated ${checked} of ${checked} forced-version PNGs: JavaScript, C, and Python have identical dimensions, palettes, and decompressed pixels.`);
+  const boundaryCases = [
+    ...["qr", "hcc2d4", "hcc2d8"].map((mode) => ({ mode, ecLevel: "Q", version: 1, paletteName: "model1" })),
+    ...["qr", "hcc2d4", "hcc2d8"].map((mode) => ({ mode, ecLevel: "M", version: 10, paletteName: "model2" })),
+    ...["qr", "hcc2d4", "hcc2d8"].map((mode) => ({ mode, ecLevel: "H", version: 27, paletteName: "model2" })),
+    ...["qr", "hcc2d4", "hcc2d8"].map((mode) => ({ mode, ecLevel: "L", version: 40, paletteName: "model1" })),
+  ];
+  let rejected = 0;
+  for (const [index, options] of boundaryCases.entries()) {
+    const capacity = capacityFor(options);
+    const label = `boundary-${options.mode}-${options.ecLevel}-v${options.version}`;
+    compareCase(label, deterministicPayload(capacity, index + 1), options);
+    checked += 1;
+    assertRejectedByEveryEncoder(`${label}-overflow`, deterministicPayload(capacity + 1, index + 101), options);
+    rejected += 1;
+  }
+
+  for (const mode of ["qr", "hcc2d4", "hcc2d8"]) {
+    for (const ecLevel of ["L", "H"]) {
+      const paletteName = ecLevel === "H" ? "model2" : "model1";
+      const versionOneCapacity = capacityFor({ mode, ecLevel, version: 1, paletteName });
+      const versionFortyCapacity = capacityFor({ mode, ecLevel, version: 40, paletteName });
+      const lengths = new Set([
+        1,
+        versionOneCapacity,
+        versionOneCapacity + 1,
+        Math.floor(versionFortyCapacity / 3),
+        Math.floor(versionFortyCapacity * 2 / 3),
+      ]);
+      let caseIndex = 0;
+      for (const length of lengths) {
+        const options = { mode, ecLevel, version: 0, paletteName };
+        compareCase(`auto-${mode}-${ecLevel}-${length}`, deterministicPayload(length, checked + caseIndex), options);
+        checked += 1;
+        caseIndex += 1;
+      }
+    }
+  }
+
+  console.log(`Validated ${checked} parity PNGs and ${rejected} exact rejection boundaries: JavaScript, C, and Python agree on dimensions, palettes, decompressed pixels, automatic version selection, binary payloads, and capacity limits.`);
 } finally {
   rmSync(temporary, { recursive: true, force: true });
 }

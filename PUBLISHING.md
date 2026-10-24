@@ -19,24 +19,38 @@ for a later production release.
 
 ## First publication and Trusted Publishing
 
-Trusted Publisher settings belong to an existing npm package. For the initial
-release, publish the reviewed package once using a narrowly scoped npm token
-from the GitHub release workflow, with provenance enabled. Immediately after
-the package exists:
+Trusted Publisher settings are configured from an existing npm package. Use a
+release candidate to establish the package without sacrificing provenance for
+the final release:
 
-1. open the package settings on npmjs.com;
-2. add a GitHub Actions Trusted Publisher;
-3. configure owner `marco-querini`;
-4. configure repository `hcc2d-cli-javascript-encoder`;
-5. configure workflow `release.yml`;
-6. configure environment `npm`;
-7. allow direct `npm publish` only;
-8. remove `NPM_TOKEN` from GitHub and revoke the bootstrap token;
-9. require 2FA and disallow token-based publishing in the package settings.
+1. set the synchronized project version to `0.9.0-rc.1`;
+2. create a short-lived granular npm token with the minimum available publish
+   access and store it only as the protected GitHub environment secret
+   `NPM_TOKEN`;
+3. create tag `v0.9.0-rc.1` and publish a GitHub prerelease; the workflow uses
+   npm dist-tag `next` and publishes provenance from the public repository;
+4. open the new package settings on npmjs.com and add a GitHub Actions Trusted
+   Publisher with owner `marco-querini`, repository
+   `hcc2d-cli-javascript-encoder`, workflow `release.yml`, environment `npm`,
+   and permission for direct `npm publish`;
+5. revoke the bootstrap token, delete the `NPM_TOKEN` GitHub secret, and remove
+   the `NODE_AUTH_TOKEN` environment entry from `release.yml`;
+6. set the synchronized project version to `0.9.0`, rerun the complete release
+   validation, and publish the final GitHub release through OIDC.
+
+A newly created Trusted Publisher configuration must complete its first
+successful publication within two days. Create the configuration only when the
+final release is ready, then publish `0.9.0` within that window. If the window
+expires, delete the expired configuration and create a new one.
 
 Trusted Publishing requires npm 11.5.1 or later and Node.js 22.14.0 or later.
-The release workflow installs the current npm CLI on Node.js 24 and requests
-only `contents: read` and `id-token: write` permissions.
+The release workflow uses Node.js 24, installs the pinned npm CLI version, and
+requests only `contents: read` and `id-token: write` permissions. GitHub Actions
+and both reference encoders are pinned to immutable commit identifiers.
+
+After the first successful OIDC publication, set npm publishing access to
+"Require two-factor authentication and disallow tokens". The Trusted Publisher
+continues to work with short-lived OIDC credentials.
 
 Official references:
 
@@ -51,7 +65,8 @@ Official references:
 3. Confirm there are no credentials, generated PNG files, tarballs,
    `node_modules`, coverage output, or local build artifacts tracked.
 4. Run `npm ci` and `npm test`.
-5. Run `npm run test:reference` against clean C and Python reference clones.
+5. Run `npm run test:reference` against the pinned C and Python reference
+   revisions.
 6. Run `npm pack --dry-run` and inspect the complete allow-listed manifest.
 7. Build the tarball with `npm pack` and install it into an empty project.
 8. Generate at least one QR, HCC2D4, and HCC2D8 image through the installed

@@ -44,6 +44,35 @@ test("known HCC2D4 and HCC2D8 outputs match the reference encoders", () => {
   assert.equal(sha256(eight.pixels), "d4b24381e4996a47d646fc8809352e46a566e0a9e6ad32f63056e0dc3390e596");
 });
 
+test("version 1 capacity boundaries and automatic version selection are exact", () => {
+  const capacities = {
+    qr: { L: 17, M: 14, Q: 11, H: 7 },
+    hcc2d4: { L: 35, M: 29, Q: 23, H: 15 },
+    hcc2d8: { L: 54, M: 45, Q: 36, H: 24 },
+  };
+  for (const [mode, levels] of Object.entries(capacities)) {
+    for (const [ecLevel, capacity] of Object.entries(levels)) {
+      const encode = (length, version) => mode === "qr"
+        ? encodeQr(Buffer.alloc(length), { ecLevel, version, scale: 6, quietZone: 0 })
+        : encodeHcc2d(Buffer.alloc(length), { mode, ecLevel, version, scale: 6, quietZone: 0 });
+      assert.equal(encode(capacity, 1).version, 1, `${mode}/${ecLevel} must accept its version 1 capacity`);
+      assert.throws(() => encode(capacity + 1, 1), new RegExp(`fits at most ${capacity} bytes`));
+      assert.equal(encode(capacity + 1, 0).version, 2, `${mode}/${ecLevel} must advance to version 2`);
+    }
+  }
+});
+
+test("binary payloads exercise multi-block symbols", () => {
+  const payload = Buffer.from({ length: 100 }, (_, index) => (index * 197 + 83) & 0xff);
+  for (const mode of ["qr", "hcc2d4", "hcc2d8"]) {
+    const symbol = mode === "qr"
+      ? encodeQr(payload, { ecLevel: "Q", version: 10, scale: 6, quietZone: 0 })
+      : encodeHcc2d(payload, { mode, ecLevel: "Q", version: 10, scale: 6, quietZone: 0 });
+    assert.equal(symbol.version, 10);
+    assert.ok(symbol.pixels.some((value) => value !== 0));
+  }
+});
+
 test("HCC2DF preserves basename and applies compression only when useful", () => {
   const compressed = buildHcc2dfPayload("folder/example.txt", Buffer.alloc(512, "A"));
   assert.equal(compressed.subarray(0, 6).toString("ascii"), "HCC2DF");

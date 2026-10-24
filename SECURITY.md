@@ -5,7 +5,7 @@
 Security fixes are provided for the latest published release line.
 
 | Version | Supported |
-|---|---|
+| --- | --- |
 | 0.9.x | Yes |
 | Earlier versions | No |
 

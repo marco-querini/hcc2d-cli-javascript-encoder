@@ -1,3 +1,5 @@
+# Pull request
+
 ## Summary
 
 Describe the problem and the smallest change that solves it.
@@ -6,7 +8,8 @@ Describe the problem and the smallest change that solves it.
 
 - [ ] Public API changes are documented.
 - [ ] Encoding behavior remains compatible with HCC2D Specification 0.9.0.
-- [ ] No runtime dependency, telemetry, network access, install hook, or generated artifact was added.
+- [ ] No runtime dependency, telemetry, network access, install hook, or
+      generated artifact was added.
 
 ## Validation
 

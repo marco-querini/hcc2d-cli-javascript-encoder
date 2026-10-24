@@ -1,10 +1,39 @@
+# Dependencies
 node_modules/
+
+# Test and coverage output
 coverage/
 .nyc_output/
-.cache/
+
+# Build and package artifacts
 dist/
 *.tgz
+
+# Generated encoder output
 *.png
+
+# Tool caches and temporary files
+.cache/
+.eslintcache
+.tmp/
+tmp/
+*.log
+npm-debug.log*
+
+# Local configuration and credentials
 .secrets/
 .env
+.env.*
+!.env.example
+.npmrc
+.direnv/
+*.key
+*.pem
+
+# Editors and operating systems
+.idea/
+.vscode/
+*.swp
+*~
 .DS_Store
+Thumbs.db
