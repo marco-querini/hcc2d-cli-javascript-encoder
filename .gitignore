@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+.nyc_output/
+.cache/
+dist/
+*.tgz
+*.png
+.secrets/
+.env
+.DS_Store

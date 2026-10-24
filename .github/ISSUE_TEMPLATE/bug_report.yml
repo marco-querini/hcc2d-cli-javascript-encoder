@@ -1,0 +1,50 @@
+name: Bug report
+description: Report reproducible incorrect behavior in the JavaScript encoder
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve the HCC2D JavaScript Encoder. Do not include API keys, credentials, or private payloads.
+  - type: input
+    id: version
+    attributes:
+      label: Package version
+      placeholder: 0.9.0
+    validations:
+      required: true
+  - type: input
+    id: node
+    attributes:
+      label: Node.js version and operating system
+      placeholder: Node.js 24.x on Ubuntu 24.04
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Provide the smallest non-sensitive code or CLI command that demonstrates the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Checks
+      options:
+        - label: I reproduced this with the latest published version.
+          required: true
+        - label: This report contains no credentials or sensitive payload data.
+          required: true

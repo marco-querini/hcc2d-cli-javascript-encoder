@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security report
+    url: mailto:info@hcc2d.com
+    about: Report suspected vulnerabilities privately; do not open a public issue.
+  - name: HCC2D website and specification
+    url: https://hcc2d.com/en/spec
+    about: Read the official format specification and project documentation.

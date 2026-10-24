@@ -1,0 +1,51 @@
+{
+  "name": "hcc2d-encoder",
+  "version": "0.9.0",
+  "description": "Pure JavaScript reference encoder for QR, HCC2D4, and HCC2D8 symbols",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "hcc2d-encoder": "./bin/hcc2d-encoder.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "test:reference": "node scripts/compare-reference.mjs",
+    "check": "npm test && npm pack --dry-run",
+    "prepublishOnly": "npm run check"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "hcc2d",
+    "qr-code",
+    "barcode",
+    "encoder",
+    "color-barcode"
+  ],
+  "author": "Marco Querini",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marco-querini/hcc2d-cli-javascript-encoder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marco-querini/hcc2d-cli-javascript-encoder/issues"
+  },
+  "homepage": "https://hcc2d.com/en/",
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}
